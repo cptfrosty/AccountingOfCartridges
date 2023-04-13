@@ -7,6 +7,7 @@ using System.Data.SQLite;
 using System.Windows.Forms;
 using AccountingOfCartridges.Data;
 using System.Data;
+using AccountingOfCartridges.Models;
 
 namespace AccountingOfCartridges
 {
@@ -16,20 +17,25 @@ namespace AccountingOfCartridges
         static SQLiteConnection connection;
         static SQLiteCommand command;
 
-        public static List<CatridgeData> Catridges;
+        public static List<CartridgeModel> Catridges;
+        public static List<PrinterModel> Printers;
+        public static List<ITechnic> Technics;
 
         public delegate void Loaded();
         public static event Loaded LoadedCartridge;
 
         public static bool Connect()
         {
-            Catridges = new List<CatridgeData>();
+            Catridges = new List<CartridgeModel>();
+            Printers = new List<PrinterModel>();
 
             try
             {
                 connection = new SQLiteConnection("Data Source=" + pathDB + ";Version=3; FailIfMissing=False");
                 connection.Open();
+                LoadPrinters();
                 LoadCartridges();
+
                 return true;
             }
             catch (SQLiteException ex)
@@ -59,21 +65,69 @@ namespace AccountingOfCartridges
             {
                 for (int i = 0; i < data.Rows.Count; i++)
                 {
-                    CatridgeData catridge = new CatridgeData();
+                    CatridgeData cartridgeData = new CatridgeData();
+                    CartridgeModel cartridgeModel = new CartridgeModel();
                     DataRow row = data.Rows[i];
-                    catridge.ID = row.Field<long>("ID");
-                    catridge.Model = row.Field<string>("Model");
-                    catridge.Office = row.Field<string>("Cabinet");
-                    catridge.FCs = row.Field<string>("FCs");
-                    catridge.BarcodeNumber = row.Field<string>("NumBarcode");
-                    catridge.Printer = row.Field<string>("Printer");
-                    catridge.Status = row.Field<int>("IDStatus");
+                    cartridgeData.ID = row.Field<long>("ID");
+                    cartridgeData.Model = row.Field<string>("Model");
+                    cartridgeData.Office = row.Field<string>("Cabinet");
+                    cartridgeData.FCs = row.Field<string>("FCs");
+                    cartridgeData.BarcodeNumber = row.Field<string>("NumBarcode");
+                    cartridgeData.Printer = row.Field<string>("Printer");
+                    cartridgeData.Status = row.Field<int>("IDStatus");
 
-                    Catridges.Add(catridge);
+                    cartridgeModel.Data = cartridgeData;
+                    Catridges.Add(cartridgeModel);
                 }
 
                 LoadedCartridge?.Invoke();
                 return true;
+            }
+        }
+
+        public static bool LoadPrinters()
+        {
+            Printers.Clear();
+
+            command = new SQLiteCommand(connection);
+
+            command.CommandText = $"SELECT * FROM Printers";
+            DataTable data = new DataTable();
+            SQLiteDataAdapter adapter = new SQLiteDataAdapter(command);
+            adapter.Fill(data);
+
+            if (data.Rows.Count == 0)
+            {
+                return false;
+            }
+            else
+            {
+                for (int i = 0; i < data.Rows.Count; i++)
+                {
+                    PrinterData printer = new PrinterData();
+                    DataRow row = data.Rows[i];
+                    printer.ID = row.Field<long>("ID");
+                    printer.Model = row.Field<string>("Model");
+                    printer.Office = row.Field<string>("Cabinet");
+                    printer.FCs = row.Field<string>("FCs");
+                    printer.BarcodeNumber = row.Field<string>("NumBarcode");
+                    printer.Status = row.Field<long>("IDStatus");
+
+                    Printers.Add(printer);
+                }
+
+                return true;
+            }
+        }
+
+        private void UnificationToITechnic() //Объединение техники
+        {
+            Technics.Clear();
+            Technics = new List<ITechnic>();
+
+            foreach(CatridgeData catridge in Catridges)
+            {
+                Technics.Add(catridge);
             }
         }
 

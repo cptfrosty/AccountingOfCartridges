@@ -100,7 +100,8 @@
     </Compile>
     <Compile Include="Models\PrinterModel.cs" />
     <Compile Include="Models\StatusModel.cs" />
-    <Compile Include="Models\Technic.cs" />
+    <Compile Include="Models\ITechnic.cs" />
+    <Compile Include="Panels\InformationCartridge.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UIElements\StageController.cs" />

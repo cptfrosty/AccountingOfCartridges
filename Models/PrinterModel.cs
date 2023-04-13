@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AccountingOfCartridges.Data;
+using System;
 
 namespace AccountingOfCartridges.Models
 {
-    class PrinterModel
+    class PrinterModel: ITechnic
     {
+        public PrinterData Data;
+
+        public void ChangeStatus(int num)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

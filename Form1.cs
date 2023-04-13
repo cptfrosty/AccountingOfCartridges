@@ -26,30 +26,7 @@ namespace AccountingOfCartridges
 
             Database.Connect();
 
-            DataGridViewTextBoxColumn colNumBarcode;
-            DataGridViewTextBoxColumn colModel;
-            DataGridViewTextBoxColumn colCabinet;
-            DataGridViewTextBoxColumn colStatus;
-
-            colNumBarcode = new DataGridViewTextBoxColumn();
-            colNumBarcode.Name = "Баркод";
-
-            colModel = new DataGridViewTextBoxColumn();
-            colModel.Name = "Модель";
-
-            colCabinet = new DataGridViewTextBoxColumn();
-            colCabinet.Name = "Кабинет";
-
-            colStatus = new DataGridViewTextBoxColumn();
-            colStatus.Name = "Статус";
-
-            dataGridView1.Columns.AddRange(colNumBarcode, colModel, colCabinet, colStatus);
-
-            for (int i = 0; i < Database.Catridges.Count; i++) {
-                CatridgeData catridge = Database.Catridges[i];
-
-                dataGridView1.Rows.Add(catridge.BarcodeNumber, catridge.Model, catridge.Office, catridge.StatusText());
-            }
+            CreateTable(); //Создание таблицы отображения
 
             Database.LoadedCartridge += Database_LoadedCartridge;
         }
@@ -69,21 +46,6 @@ namespace AccountingOfCartridges
             _stageController.AddStage(BtnStage4, null);
 
             _stageController.ResetStages();
-
-            //_stages = new List<StageController>();
-            //_stages.Add(new StageController(BtnStage1, TextStage1));
-            //_stages.Add(new StageController(BtnStage2, TextStage2));
-            //_stages.Add(new StageController(BtnStage3, TextStage3));
-            //_stages.Add(new StageController(BtnStage4));
-
-            //for(int i = 0; i < _stages.Count - 1; i++)
-            //{
-            //    _stages[i].NextStage = _stages[i + 1];
-
-            //    if (i > 0) _stages[i].Disable();
-            //}
-
-            //_stages[_stages.Count - 1].Disable();
         }
 
         private void BtnStageClick(object sender, EventArgs e)
@@ -107,15 +69,15 @@ namespace AccountingOfCartridges
 
             for (int i = 0; i < Database.Catridges.Count; i++)
             {
-                if (Database.Catridges[i].BarcodeNumber.Contains(barcode))
+                if (Database.Catridges[i].Data.BarcodeNumber.Contains(barcode))
                 {
-                    CatridgeData catridge = Database.Catridges[i];
+                    CatridgeData catridge = Database.Catridges[i].Data;
                     dataGridView1.Rows.Add(catridge.BarcodeNumber, catridge.Model, catridge.Office, catridge.StatusText());
                 }
             }
         }
 
-        private void dataGridView1_SelectionChanged(object sender, EventArgs e)
+        private void SelectRowInTable(object sender, EventArgs e)
         {
             foreach (DataGridViewRow row in dataGridView1.SelectedRows)
             {
@@ -124,9 +86,14 @@ namespace AccountingOfCartridges
             }
         }
 
+        private void ShowInfoSelectRow(string barcode)
+        {
+
+        }
+
         private void UpdateInfoSelectRowCartridge(string barcode)
         {
-            CatridgeData cartridge = Database.Catridges.Where(c => c.BarcodeNumber == barcode).First<CatridgeData>();
+            CatridgeData cartridge = Database.Catridges.Where(c => c.Data.BarcodeNumber == barcode).First<CatridgeData>();
             textLogsCartridge.Text = "";
             Cartridge = cartridge;
             List<string> logs = Database.LoadLogs(cartridge.ID);
@@ -153,6 +120,38 @@ namespace AccountingOfCartridges
             else
             {
                 textLogsCartridge.Text = "Логи не найдены";
+            }
+        }
+
+        /// <summary>
+        /// Создание таблицы для отображения данных
+        /// </summary>
+        private void CreateTable()
+        {
+            DataGridViewTextBoxColumn colNumBarcode;
+            DataGridViewTextBoxColumn colModel;
+            DataGridViewTextBoxColumn colCabinet;
+            DataGridViewTextBoxColumn colStatus;
+
+            colNumBarcode = new DataGridViewTextBoxColumn();
+            colNumBarcode.Name = "Баркод";
+
+            colModel = new DataGridViewTextBoxColumn();
+            colModel.Name = "Модель";
+
+            colCabinet = new DataGridViewTextBoxColumn();
+            colCabinet.Name = "Кабинет";
+
+            colStatus = new DataGridViewTextBoxColumn();
+            colStatus.Name = "Статус";
+
+            dataGridView1.Columns.AddRange(colNumBarcode, colModel, colCabinet, colStatus);
+
+            for (int i = 0; i < Database.Catridges.Count; i++)
+            {
+                CatridgeData catridge = Database.Catridges[i];
+
+                dataGridView1.Rows.Add(catridge.BarcodeNumber, catridge.Model, catridge.Office, catridge.StatusText());
             }
         }
     }

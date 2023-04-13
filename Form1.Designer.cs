@@ -181,7 +181,7 @@
             this.dataGridView1.Size = new System.Drawing.Size(779, 453);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.TabStop = false;
-            this.dataGridView1.SelectionChanged += new System.EventHandler(this.dataGridView1_SelectionChanged);
+            this.dataGridView1.SelectionChanged += new System.EventHandler(this.SelectRowInTable);
             // 
             // BtnDeleteCartridge
             // 

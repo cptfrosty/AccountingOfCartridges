@@ -8,5 +8,12 @@ namespace AccountingOfCartridges.Data
 {
     class PrinterData
     {
+        public long ID;
+        public string Model;
+        public string Office;
+        public long Status;
+        public string FCs; //ФИО
+        public string BarcodeNumber;
+        public string Comment;
     }
 }

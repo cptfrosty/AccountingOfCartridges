@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace AccountingOfCartridges.Models
 {
-    class Technic
+    interface ITechnic
     {
-        
+        void ChangeStatus(int num);
     }
 }
